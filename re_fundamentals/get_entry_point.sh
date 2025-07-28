@@ -25,9 +25,9 @@ if [[ "$magic_bytes" != "7f 45 4c 46 " ]]; then
 fi
 
 # Extract values from ELF header using readelf
-magic_number=$(hexdump -n 4 -v -e '4/1 "%02x"' "$file_name")
+magic_number=$(hexdump -n 16 -v -e '16/1 "%02x "' "$file_name" | sed 's/ $//')
 class=$(readelf -h "$file_name" | awk -F: '/Class:/ {gsub(/ /,"",$2); print $2}')
-byte_order=$(readelf -h "$file_name" | awk -F: '/Data:/ {print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
+byte_order=$(readelf -h "$file_name" | awk -F: '/Data:/ {print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | cut -d',' -f2 | sed 's/^[ \t]*//')
 entry_point_address=$(readelf -h "$file_name" | awk -F: '/Entry point address:/ {print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//')
 
 # Call the message function to display results
